@@ -61,6 +61,8 @@ int main() {
     int block_size{1024};
     int grid_size{div_ceil(div_ceil(N, 4), 1024)};
 
+    printf("grid_size %d, block_size: %d\n", grid_size, block_size);
+
     elementwise_add_float4<<<grid_size, block_size>>>(a_d, b_d, c_d, N);
 
     cudaCheck(cudaMemcpy(c_h, c_d, N * sizeof(float), cudaMemcpyDeviceToHost));
