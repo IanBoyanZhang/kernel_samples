@@ -11,6 +11,8 @@ type pruning, treating a memory address as a pointer to a different type than it
 
 ### Details
 
+#### Vectorization
+
 [flaot4 bandwidth advantages over plain float1](https://forums.developer.nvidia.com/t/float4-bandwidth-advantages-over-plain-float1/62799/4)
 
 The advantage might come from reduced instruction count
