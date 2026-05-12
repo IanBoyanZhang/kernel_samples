@@ -33,7 +33,7 @@ __global__ void elementwise_add_float4(float* a, float* b, float* c, int N) {
 }
 
 int main() {
-    constexpr int N = 7;
+    constexpr int N = 1e6;
     float* a_h = (float*)malloc(N * sizeof(float));
     float* b_h = (float*)malloc(N * sizeof(float));
     float* c_h = (float*)malloc(N * sizeof(float));
@@ -97,5 +97,6 @@ int main() {
 	    printf("%f ", c_h[i]);
 	}
     }
+
     return 0;
 }
