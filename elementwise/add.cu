@@ -71,6 +71,10 @@ int main() {
     cudaCheck(cudaFree(b_d));
     cudaCheck(cudaFree(c_d));
 
+    free(a_h);
+    free(b_h);
+    free(c_h);
+
     for (int i = 0; i < N; i++ ) {
         if (i == N-1) { 
 	    printf("%f\n", a_h[i]);
