@@ -185,6 +185,14 @@ The L2 cache communicates with the SM in 128-byte cache lines (made of four 32-b
 
 `L2 Load Access Pattern` metric in Nsight can be a good spot to look at. Each line is divided into four 32-byte sectors.
 
+
+## Streaming Kernel 
+
+sigmoid and relu kernel can be found in `streaming_kernel.cu`, they achieve similar metrics in ncu reports
+
+
+## Future improvement
+
 ### `Swizzling(block Scheduling)` 
 
 thread blocks are launched in row-major order, by default. If your kernel is part of larger 2D operations, "block swizzling" can improve L2 hit rates by reordering block execution
