@@ -7,7 +7,6 @@ void max_cpu(float* input, float* output, int N) {
     *output = *(std::max_element(input, input + N));
 }
 
-
 __device__ static float atomicMax(float* address, float val) {
     int* address_as_i = (int*)address;
     int old = *address_as_i;
@@ -53,9 +52,6 @@ __global__ void maxKernel(float* input, float* output, int N) {
 
 int main() {
     size_t const N = 12800;
-    constexpr size_t BLOCK_SIZE = 128;
-    int block_size = BLOCK_SIZE;
-    int grid_size  = div_ceil(N, BLOCK_SIZE);
     const int repeat_times = 10;
 
     float* input = (float*)malloc(sizeof(float) * N);
@@ -64,13 +60,34 @@ int main() {
     }
 
     float* output_ref = (float*)malloc(1 * sizeof(float));
-
+    float total_time_h = time_record(repeat_times, ([&]{max_cpu(input, output_ref, N);}));
+    printf("[max_cpu]: total_time_h = %f ms\n", total_time_h / repeat_times);
 
     float* output = (float*)malloc(1 * sizeof(float));
     float* input_device  = nullptr;
     float* output_device = nullptr;
 
-    float total_time_h = time_record(repeat_times,  ([&]{maxKernel<<<grid_size, block_size>>>(input_device, output_device, N);})); 
+    cudaMalloc(&input_device, N * sizeof(float));
+    cudaMalloc(&output_device, 1 * sizeof(float));
+    cudaMemcpy(input_device, input, N * sizeof(float), cudaMemcpyHostToDevice);
+
+
+    constexpr size_t BLOCK_SIZE = 128;
+    int block_size = BLOCK_SIZE;
+    // int grid_size  = div_ceil(N, BLOCK_SIZE);
+    int grid_size  = ceil(N, BLOCK_SIZE);
+    printf("grid_size: %d, block_size: %d", grid_size, block_size);
+    float total_time_1 = time_record(repeat_times,  ([&]{maxKernel<<<grid_size, block_size>>>(input_device, output_device, N);}));
+    printf("[max_kernel]: total_time_1 = %f ms\n", total_time_1 / repeat_times);
+    cudaMemcpy(output, output_device, 1 * sizeof(float), cudaMemcpyDeviceToHost);
+    printf("output = %f, output_ref = %f\n", *output, *output_ref);
+
+    free(input);
+    free(output);
+    free(output_ref);
+
+    cudaFree(input_device);
+    cudaFree(output_device);
 
     return 0;
 }

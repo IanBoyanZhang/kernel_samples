@@ -16,6 +16,11 @@ constexpr T div_ceil(T a, T b) {
     return (a / b) + ( (a % b != 0) && ((a ^ b) >= 0) );
 }
 
+template<typename T>
+constexpr T ceil(T a, T b) {
+    return ((a) + (b) - 1) / (b);
+}
+
 // RAII Wrapper for CUDA Events
 struct CudaEvent {
     cudaEvent_t event;
@@ -47,6 +52,28 @@ float time_record(int n, Func&& func) {
     }
     return total_time / n; // Return average
 }
+
+// #define TIME_RECORD(N, func)                                                                    \
+//     [&] {                                                                                       \
+//         float total_time = 0;                                                                   \
+//         for (int repeat = 0; repeat <= N; ++repeat) {                                           \
+//             cudaEvent_t start, stop;                                                            \
+//             cudaCheck(cudaEventCreate(&start));                                                 \
+//             cudaCheck(cudaEventCreate(&stop));                                                  \
+//             cudaCheck(cudaEventRecord(start));                                                  \
+//             cudaEventQuery(start);                                                              \
+//             func();                                                                             \
+//             cudaCheck(cudaEventRecord(stop));                                                   \
+//             cudaCheck(cudaEventSynchronize(stop));                                              \
+//             float elapsed_time;                                                                 \
+//             cudaCheck(cudaEventElapsedTime(&elapsed_time, start, stop));                        \
+//             if (repeat > 0) total_time += elapsed_time;                                         \
+//             cudaCheck(cudaEventDestroy(start));                                                 \
+//             cudaCheck(cudaEventDestroy(stop));                                                  \
+//         }                                                                                       \
+//         if (N == 0) return (float)0.0;                                                          \
+//         return total_time;                                                                      \
+//     }()
 
 void randomize_matrix(float *mat, int N);
 void print_matrix(float* a, int M, int N);
