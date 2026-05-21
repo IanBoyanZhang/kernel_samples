@@ -19,7 +19,8 @@ __device__ static float atomicMax(float* address, float val) {
     return __int_as_float(old);
 }
 
-__device__ void maxKernel(float* input, float* output, int N) {
+// From host can only call __global__ function not device
+__global__ void maxKernel(float* input, float* output, int N) {
     __shared__ float s_mem[32];
     int idx = blockDim.x * blockIdx.x + threadIdx.x;
     int warpId = threadIdx.x / warpSize;
@@ -27,7 +28,7 @@ __device__ void maxKernel(float* input, float* output, int N) {
 
     // Find max
     float val = (idx < N) ? input[idx] : (-FLT_MAX);
-    // This will cause constexpr in __device__ compilation error
+    //  calling a constexpr __host__ function("lowest") from a __global__ function("maxKernel") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.
     // float val = (idx < N) ? input[idx] : std::numeric_limits<float>::lowest();
     for (int offset = warpSize >> 1; offset > 0; offset >>= 1) {
         val = fmaxf(val, __shfl_down_sync(0xFFFFFFFF, val, offset));
@@ -63,7 +64,13 @@ int main() {
     }
 
     float* output_ref = (float*)malloc(1 * sizeof(float));
-    // float total_time_h = time_record(repeat_times,  ([&]{max_kernel<<<grid_size, block_size>>>(input_device, output_device, N);})); 
+
+
+    float* output = (float*)malloc(1 * sizeof(float));
+    float* input_device  = nullptr;
+    float* output_device = nullptr;
+
+    float total_time_h = time_record(repeat_times,  ([&]{maxKernel<<<grid_size, block_size>>>(input_device, output_device, N);})); 
 
     return 0;
 }
