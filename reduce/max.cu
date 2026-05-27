@@ -25,6 +25,7 @@ __global__ void maxKernel(float* input, float* output, int N) {
     int warpId = threadIdx.x / warpSize;
     int laneId = threadIdx.x % warpSize;
 
+    // mask out or ignore threads/elements that fall outside the valid boundaries of your data
     // Find max
     float val = (idx < N) ? input[idx] : (-FLT_MAX);
     //  calling a constexpr __host__ function("lowest") from a __global__ function("maxKernel") is not allowed. The experimental flag '--expt-relaxed-constexpr' can be used to allow this.

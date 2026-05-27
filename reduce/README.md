@@ -227,6 +227,43 @@ It is said, [signbit in CUDA is implemented in a branchless way](https://stackov
 
 
 
+
+## Tree Reduction Idiom 
+
+```cpp
+for (int offset = warpSize >> 1; offset > 0; offset >>= 1)
+```
+
+This code is the standard CUDA idiom for a `parallel warp reduction`, which calculates a single result (like a sum, minimum, or maximum) across 32 threads.
+
+$\log_{2}{32} = 5$ steps 
+
+```cpp
+// 1. Mask out-of-bounds elements (Your previous question)
+float val = (idx < N) ? input[idx] : (-FLT_MAX);
+
+// 2. Warp-level reduction to find the maximum value
+for (int offset = warpSize >> 1; offset > 0; offset >>= 1) {
+    val = max(val, __shfl_down_sync(0xFFFFFFFF, val, offset));
+}
+// Thread 0 now contains the true maximum value of the warp
+```
+
+`__shfl_down_sync` bypasses shared memory by allowing threads to read data directly from the `registers` of other threads within the same warp.
+
+The Streaming Multiprocessor (SM) uses an internal hardware crossbar switch or interconnect network that links the specific register file indices of the sending and receiving threads.
+
+**Synchronous Execution:**  Because all 32 threads in a warp execute the exact same instruction at the exact same cycle (SIMT architecture), they can safely swap register data simultaneously without needing a memory buffer to coordinate.
+
+
+- *0xFFFFFFFF (Mask)*: A 32-bit mask telling the GPU which threads are participating. `0xFFFFFFFF` means all 32 threads in the warp must hit this instruction before the data transfer happens.
+- `val (Source)`: The variable in the current thread's register that it wants to share with a neighbor
+- `offset (Shift distance)`
+
+
+
+## Warp Level Patterns
+
 ## Further reading
 
 [CUDA atomicMax for float](https://forums.developer.nvidia.com/t/cuda-atomicmax-for-float/194207)
