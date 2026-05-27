@@ -7,3 +7,4 @@ include_directories(${PROJECT_SOURCE_DIR}/../common/include)
 aux_source_directory(${PROJECT_SOURCE_DIR}/../src SRC)
 
 add_executable(max max.cu ${SRC})
+add_executable(softmax softmax.cu ${SRC})
