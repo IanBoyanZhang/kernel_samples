@@ -284,6 +284,12 @@ To synchronize across an entire grid
 
 - Cooperative Groups (CUDA 9+): 
 
+The cooperative groups implementation is also commonly used in reduction pattern in new CUDA GPU hardware
+
+### Hardware support
+
+[independent thread scheduling](https://stackoverflow.com/questions/70987051/independent-thread-scheduling-since-volta) introduced since Volta arch is required for using the new features 
+
 
 ## Further reading
 
