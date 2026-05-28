@@ -290,6 +290,14 @@ The cooperative groups implementation is also commonly used in reduction pattern
 
 [independent thread scheduling](https://stackoverflow.com/questions/70987051/independent-thread-scheduling-since-volta) introduced since Volta arch is required for using the new features 
 
+### Warp Shuffle Sync
+
+A warp shuffle sync is also implemented, tested on my native volta gpu, no obvious perf differences
+
+
+### Further implementation
+
+The next evoluation is "online softmax" and flash attetnion 
 
 ## Further reading
 
