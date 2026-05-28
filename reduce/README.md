@@ -264,6 +264,27 @@ The Streaming Multiprocessor (SM) uses an internal hardware crossbar switch or i
 
 ## Warp Level Patterns
 
+
+## Softmax
+
+Fusing could be the improvement for the existing implementation
+
+### Fences
+
+`__threadfence()` is memory fence not a thread barrier
+
+- it forces memory writes made by the calling threads `visible` to all other threads before the calling thread moving past the fence
+- it does not stall or pause other blocks (being scheduled)
+
+### Synchronization
+
+To synchronize across an entire grid
+
+- The Kernel Boundary Method
+
+- Cooperative Groups (CUDA 9+): 
+
+
 ## Further reading
 
 [CUDA atomicMax for float](https://forums.developer.nvidia.com/t/cuda-atomicmax-for-float/194207)
